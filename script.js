@@ -1,1529 +1,555 @@
-/* =========================================================
-   METROCHECK
-   Cross-source packaged commodity verification prototype
-========================================================= */
-
-
 let uploadedImages = [];
-
 let onlineListing = null;
 
+const pages = [
+  "homePage",
+  "uploadPage",
+  "analysisPage",
+  "resultsPage",
+  "reportPage"
+];
 
-/* =========================
-   ELEMENTS
-========================= */
+const $ = id => document.getElementById(id);
 
-const homePage =
-  document.getElementById("homePage");
+const homePage = $("homePage");
+const uploadPage = $("uploadPage");
+const analysisPage = $("analysisPage");
+const resultsPage = $("resultsPage");
+const reportPage = $("reportPage");
 
-const uploadPage =
-  document.getElementById("uploadPage");
-
-const analysisPage =
-  document.getElementById("analysisPage");
-
-const resultsPage =
-  document.getElementById("resultsPage");
-
-const reportPage =
-  document.getElementById("reportPage");
-
-
-const uploadArea =
-  document.getElementById("uploadArea");
-
-const imageInput =
-  document.getElementById("imageInput");
-
-const listingInput =
-  document.getElementById("listingInput");
-
-const imagePreview =
-  document.getElementById("imagePreview");
-
-const imageCount =
-  document.getElementById("imageCount");
-
-const analyzeButton =
-  document.getElementById("analyzeButton");
+const uploadArea = $("uploadArea");
+const imageInput = $("imageInput");
+const listingInput = $("listingInput");
+const imagePreview = $("imagePreview");
+const imageCount = $("imageCount");
+const analyzeButton = $("analyzeButton");
 
 
-/* =========================
-   PAGE NAVIGATION
-========================= */
+/* Navigation */
 
-function hideAllPages() {
-
-  homePage.classList.add("hidden");
-
-  uploadPage.classList.add("hidden");
-
-  analysisPage.classList.add("hidden");
-
-  resultsPage.classList.add("hidden");
-
-  reportPage.classList.add("hidden");
-
+function hidePages() {
+  pages.forEach(id => $(id).classList.add("hidden"));
 }
 
+function showPage(id) {
+  hidePages();
+  $(id).classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
 function startInspection() {
-
-  hideAllPages();
-
-  uploadPage.classList.remove("hidden");
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
+  showPage("uploadPage");
 }
-
 
 function goHome() {
-
-  hideAllPages();
-
-  homePage.classList.remove("hidden");
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
+  showPage("homePage");
 }
-
 
 function scrollToHowItWorks() {
+  $("howItWorks").scrollIntoView({ behavior: "smooth" });
+}
 
-  document
-    .getElementById("howItWorks")
-    .scrollIntoView({
-      behavior: "smooth"
-    });
+function showResults() {
+  showPage("resultsPage");
+  renderResults();
+}
 
+function showReport() {
+  showPage("reportPage");
+  renderReport();
 }
 
 
-/* =========================
-   PACKAGE IMAGE UPLOAD
-========================= */
+/* Package image upload */
 
-uploadArea.addEventListener(
-  "click",
-  () => imageInput.click()
-);
+uploadArea.addEventListener("click", () => imageInput.click());
 
+imageInput.addEventListener("change", e => {
+  addImages(e.target.files);
+});
 
-imageInput.addEventListener(
-  "change",
-  (event) => {
-    addImages(event.target.files);
-  }
-);
+uploadArea.addEventListener("dragover", e => {
+  e.preventDefault();
+  uploadArea.classList.add("dragging");
+});
 
+uploadArea.addEventListener("dragleave", () => {
+  uploadArea.classList.remove("dragging");
+});
 
-uploadArea.addEventListener(
-  "dragover",
-  (event) => {
-
-    event.preventDefault();
-
-    uploadArea.classList.add("dragging");
-
-  }
-);
-
-
-uploadArea.addEventListener(
-  "dragleave",
-  () => {
-
-    uploadArea.classList.remove("dragging");
-
-  }
-);
-
-
-uploadArea.addEventListener(
-  "drop",
-  (event) => {
-
-    event.preventDefault();
-
-    uploadArea.classList.remove("dragging");
-
-    addImages(event.dataTransfer.files);
-
-  }
-);
-
+uploadArea.addEventListener("drop", e => {
+  e.preventDefault();
+  uploadArea.classList.remove("dragging");
+  addImages(e.dataTransfer.files);
+});
 
 function addImages(files) {
-
-  Array.from(files).forEach(
-    (file) => {
-
-      if (!file.type.startsWith("image/")) {
-
-        return;
-
-      }
-
-
-      uploadedImages.push({
-
-        file: file,
-
-        url: URL.createObjectURL(file)
-
-      });
-
-    }
-  );
-
-
-  imageInput.value = "";
-
-  renderImages();
-
-}
-
-
-function renderImages() {
-
-  imagePreview.innerHTML = "";
-
-
-  const panelNames = [
-
-    "Front",
-
-    "Back",
-
-    "Side",
-
-    "Additional"
-
-  ];
-
-
-  uploadedImages.forEach(
-    (image, index) => {
-
-      const panelName =
-        panelNames[index] ||
-        `Panel ${index + 1}`;
-
-
-      const card =
-        document.createElement("div");
-
-
-      card.className =
-        "image-card";
-
-
-      card.innerHTML = `
-
-        <img
-          src="${image.url}"
-          alt="${panelName} product panel"
-        >
-
-
-        <div class="image-info">
-
-          <span>
-            ${panelName}
-          </span>
-
-
-          <button
-            class="remove-image"
-            onclick="removeImage(${index})"
-          >
-            Remove
-          </button>
-
-        </div>
-
-      `;
-
-
-      imagePreview.appendChild(card);
-
-    }
-  );
-
-
-  imageCount.textContent =
-    `${uploadedImages.length} image${
-      uploadedImages.length !== 1
-        ? "s"
-        : ""
-    }`;
-
-
-  analyzeButton.disabled =
-    uploadedImages.length === 0;
-
-}
-
-
-function removeImage(index) {
-
-  if (
-    uploadedImages[index] &&
-    uploadedImages[index].url
-  ) {
-
-    URL.revokeObjectURL(
-      uploadedImages[index].url
-    );
-
-  }
-
-
-  uploadedImages.splice(index, 1);
-
-
-  renderImages();
-
-}
-
-
-/* =========================
-   ONLINE LISTING UPLOAD
-========================= */
-
-listingInput.addEventListener(
-  "change",
-  (event) => {
-
-    const file =
-      event.target.files[0];
-
-
-    if (!file) {
-
-      return;
-
-    }
-
-
-    if (!file.type.startsWith("image/")) {
-
-      return;
-
-    }
-
-
-    onlineListing = {
-
-      file: file,
-
+  [...files].forEach(file => {
+    if (!file.type.startsWith("image/")) return;
+
+    uploadedImages.push({
+      file,
       url: URL.createObjectURL(file)
-
-    };
-
-
-    renderListing();
-
-  }
-);
-
-
-function renderListing() {
-
-  const preview =
-    document.getElementById(
-      "listingPreview"
-    );
-
-
-  const image =
-    document.getElementById(
-      "listingImage"
-    );
-
-
-  const fileName =
-    document.getElementById(
-      "listingFileName"
-    );
-
-
-  if (!onlineListing) {
-
-    preview.classList.add(
-      "hidden"
-    );
-
-    return;
-
-  }
-
-
-  image.src =
-    onlineListing.url;
-
-
-  fileName.textContent =
-    onlineListing.file.name;
-
-
-  preview.classList.remove(
-    "hidden"
-  );
-
-}
-
-
-function removeListing() {
-
-  if (
-    onlineListing &&
-    onlineListing.url
-  ) {
-
-    URL.revokeObjectURL(
-      onlineListing.url
-    );
-
-  }
-
-
-  onlineListing = null;
-
-
-  listingInput.value = "";
-
-
-  renderListing();
-
-}
-
-
-/* =========================
-   ANALYSIS
-========================= */
-
-async function analyzeProduct() {
-
-  if (uploadedImages.length === 0) {
-
-    return;
-
-  }
-
-
-  hideAllPages();
-
-
-  analysisPage.classList.remove(
-    "hidden"
-  );
-
-
-  window.scrollTo({
-
-    top: 0,
-
-    behavior: "smooth"
-
+    });
   });
 
-
-  const logs =
-    document.getElementById(
-      "analysisLog"
-    );
-
-
-  logs.innerHTML = "";
-
-
-  resetAnalysisSteps();
-
-
-  await runAnalysisStep(
-
-    1,
-
-    "Reading package images and detecting text regions..."
-
-  );
-
-
-  await runAnalysisStep(
-
-    2,
-
-    "Extracting declarations such as MRP, quantity, date and manufacturer..."
-
-  );
-
-
-  await runAnalysisStep(
-
-    3,
-
-    onlineListing
-
-      ? "Comparing package declarations with the online listing and checking machine-readable data..."
-
-      : "Checking package declarations and scanning for QR / barcode information..."
-
-  );
-
-
-  await runAnalysisStep(
-
-    4,
-
-    "Building evidence-backed findings and preparing the inspection report..."
-
-  );
-
-
-  setTimeout(
-    showResults,
-    600
-  );
-
+  imageInput.value = "";
+  renderImages();
 }
 
+function renderImages() {
+  const names = ["Front", "Back", "Side", "Additional"];
 
-function resetAnalysisSteps() {
+  imagePreview.innerHTML = uploadedImages.map((img, i) => `
+    <div class="image-card">
+      <img src="${img.url}" alt="${names[i] || "Package panel"}">
+      <div class="image-info">
+        <span>${names[i] || `Panel ${i + 1}`}</span>
+        <button class="remove-btn" onclick="removeImage(${i})">Remove</button>
+      </div>
+    </div>
+  `).join("");
 
-  for (
-    let i = 1;
-    i <= 4;
-    i++
-  ) {
+  imageCount.textContent =
+    `${uploadedImages.length} image${uploadedImages.length === 1 ? "" : "s"}`;
 
-    document
-      .getElementById(
-        `step${i}`
-      )
-      .classList.remove(
-        "active",
-        "completed"
-      );
+  analyzeButton.disabled = uploadedImages.length === 0;
+}
 
+function removeImage(index) {
+  const image = uploadedImages[index];
+
+  if (image?.url) {
+    URL.revokeObjectURL(image.url);
   }
 
+  uploadedImages.splice(index, 1);
+  renderImages();
 }
 
 
-function runAnalysisStep(
-  stepNumber,
-  message
-) {
+/* Online listing */
 
-  return new Promise(
-    (resolve) => {
+listingInput.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file || !file.type.startsWith("image/")) return;
 
-      const step =
-        document.getElementById(
-          `step${stepNumber}`
-        );
+  if (onlineListing?.url) {
+    URL.revokeObjectURL(onlineListing.url);
+  }
+
+  onlineListing = {
+    file,
+    url: URL.createObjectURL(file)
+  };
+
+  renderListing();
+});
+
+function renderListing() {
+  const preview = $("listingPreview");
+
+  if (!onlineListing) {
+    preview.classList.add("hidden");
+    return;
+  }
+
+  $("listingImage").src = onlineListing.url;
+  $("listingFileName").textContent = onlineListing.file.name;
+  preview.classList.remove("hidden");
+}
+
+function removeListing() {
+  if (onlineListing?.url) {
+    URL.revokeObjectURL(onlineListing.url);
+  }
+
+  onlineListing = null;
+  listingInput.value = "";
+  renderListing();
+}
 
 
-      step.classList.add(
-        "active"
-      );
+/* Analysis */
 
+async function analyzeProduct() {
+  if (!uploadedImages.length) return;
 
-      addLog(message);
+  showPage("analysisPage");
 
+  $("analysisLog").innerHTML = "";
+  resetAnalysis();
 
-      setTimeout(
-        () => {
-
-          step.classList.remove(
-            "active"
-          );
-
-
-          step.classList.add(
-            "completed"
-          );
-
-
-          addLog(
-            "✓ Completed"
-          );
-
-
-          resolve();
-
-        },
-        1000
-      );
-
-    }
+  await runStep(
+    1,
+    "Reading package images and detecting text regions..."
   );
 
+  await runStep(
+    2,
+    "Extracting declarations such as MRP, quantity, date and manufacturer..."
+  );
+
+  await runStep(
+    3,
+    onlineListing
+      ? "Comparing package declarations with the online listing and checking machine-readable data..."
+      : "Checking declarations and scanning for QR / barcode information..."
+  );
+
+  await runStep(
+    4,
+    "Building evidence-backed findings and preparing the inspection report..."
+  );
+
+  setTimeout(showResults, 500);
 }
 
+function resetAnalysis() {
+  for (let i = 1; i <= 4; i++) {
+    $(`step${i}`).classList.remove("active", "completed");
+  }
+}
+
+function runStep(number, message) {
+  return new Promise(resolve => {
+    const step = $(`step${number}`);
+
+    step.classList.add("active");
+    addLog(message);
+
+    setTimeout(() => {
+      step.classList.remove("active");
+      step.classList.add("completed");
+      addLog("✓ Completed");
+      resolve();
+    }, 850);
+  });
+}
 
 function addLog(message) {
-
-  const line =
-    document.createElement("p");
-
-
-  line.textContent =
-    `> ${message}`;
-
-
-  document
-    .getElementById(
-      "analysisLog"
-    )
-    .appendChild(line);
-
+  const line = document.createElement("p");
+  line.textContent = `> ${message}`;
+  $("analysisLog").appendChild(line);
 }
 
 
-/* =========================
-   DEMO INSPECTION RESULT
-   Temporary until OCR is connected
-========================= */
+/*
+  Demo result for the current front-end prototype.
+  Later this object can be replaced with data returned
+  by the OCR + rule engine backend.
+*/
 
 const inspectionResult = {
+  productName: "Example Packaged Commodity",
 
-  productName:
-    "Example Packaged Commodity",
-
-
-  status:
-    "violation",
-
+  status: "violation",
 
   message:
     "A cross-source discrepancy was detected. The package and online listing contain different MRP values. Manual verification is recommended.",
 
-
   declarations: [
-
     {
-
-      name:
-        "Product name",
-
-      value:
-        "Example Packaged Commodity",
-
-      status:
-        "pass"
-
+      name: "Product name",
+      value: "Example Packaged Commodity",
+      status: "pass"
     },
-
-
     {
-
-      name:
-        "Manufacturer / Packer",
-
-      value:
-        "ABC Foods Pvt. Ltd.",
-
-      status:
-        "pass"
-
+      name: "Manufacturer / Packer",
+      value: "ABC Foods Pvt. Ltd.",
+      status: "pass"
     },
-
-
     {
-
-      name:
-        "Net Quantity",
-
-      value:
-        "500 g",
-
-      status:
-        "pass"
-
+      name: "Net Quantity",
+      value: "500 g",
+      status: "pass"
     },
-
-
     {
-
-      name:
-        "Maximum Retail Price (MRP)",
-
-      value:
-        "₹199",
-
-      status:
-        "violation"
-
+      name: "Maximum Retail Price (MRP)",
+      value: "₹199",
+      status: "violation"
     },
-
-
     {
-
-      name:
-        "Packing Date",
-
-      value:
-        "August 2026",
-
-      status:
-        "pass"
-
+      name: "Packing Date",
+      value: "August 2026",
+      status: "pass"
     },
-
-
     {
-
-      name:
-        "Consumer Care",
-
-      value:
-        "1800-XXX-XXXX",
-
-      status:
-        "pass"
-
+      name: "Consumer Care",
+      value: "1800-XXX-XXXX",
+      status: "pass"
     }
-
   ],
-
 
   comparisons: [
-
     {
-
-      field:
-        "MRP",
-
-      package:
-        "₹199",
-
-      online:
-        "₹249",
-
-      status:
-        "mismatch"
-
+      field: "MRP",
+      package: "₹199",
+      online: "₹249",
+      status: "mismatch"
     },
-
-
     {
-
-      field:
-        "Net Quantity",
-
-      package:
-        "500 g",
-
-      online:
-        onlineListing
-          ? "500 g"
-          : "Not supplied",
-
-      status:
-        onlineListing
-          ? "match"
-          : "review"
-
+      field: "Net Quantity",
+      package: "500 g",
+      online: onlineListing ? "500 g" : "Not supplied",
+      status: onlineListing ? "match" : "review"
     },
-
-
     {
-
-      field:
-        "Manufacturer",
-
-      package:
-        "ABC Foods Pvt. Ltd.",
-
-      online:
-        onlineListing
-          ? "ABC Foods Pvt. Ltd."
-          : "Not supplied",
-
-      status:
-        onlineListing
-          ? "match"
-          : "review"
-
+      field: "Manufacturer",
+      package: "ABC Foods Pvt. Ltd.",
+      online: onlineListing ? "ABC Foods Pvt. Ltd." : "Not supplied",
+      status: onlineListing ? "match" : "review"
     },
-
-
     {
-
-      field:
-        "QR / Barcode",
-
-      package:
-        "Detected",
-
-      online:
-        "Encoded information",
-
-      status:
-        "match"
-
+      field: "QR / Barcode",
+      package: "Detected",
+      online: "Encoded information",
+      status: "match"
     }
-
   ],
 
-
   findings: [
-
     {
-
-      title:
-        "MRP mismatch across sources",
-
+      title: "MRP mismatch across sources",
       description:
-        "The maximum retail price detected on the physical package differs from the value shown in the online product listing.",
-
-      status:
-        "violation",
-
-      evidence:
-        "Package: ₹199 · Online listing: ₹249"
-
+        "The maximum retail price detected on the physical package differs from the value shown in the online listing.",
+      status: "violation",
+      evidence: "Package: ₹199 · Online listing: ₹249"
     },
-
-
     {
-
-      title:
-        "Machine-readable code detected",
-
+      title: "Machine-readable code detected",
       description:
-        "A QR / barcode region was detected on the uploaded package and is available for verification against the extracted declarations.",
-
-      status:
-        "pass",
-
-      evidence:
-        "QR / barcode source: package image"
-
+        "A QR / barcode region was detected on the uploaded package and is available for verification.",
+      status: "pass",
+      evidence: "QR / barcode source: package image"
     },
-
-
     {
-
-      title:
-        "Physical readability requires verification",
-
+      title: "Physical readability requires verification",
       description:
         "Image-based screening cannot conclusively establish physical print-size compliance. An inspector should verify print height and placement.",
-
-      status:
-        "review",
-
-      evidence:
-        "Physical verification required"
-
+      status: "review",
+      evidence: "Physical verification required"
     }
-
   ]
-
 };
 
 
-/* =========================
-   RESULTS
-========================= */
+/* Results */
 
-function showResults() {
+function renderResults() {
+  $("productName").textContent = inspectionResult.productName;
+  $("inspectionDate").textContent =
+    `Inspected on ${new Date().toLocaleString()}`;
 
-  hideAllPages();
-
-
-  resultsPage.classList.remove(
-    "hidden"
-  );
-
-
-  window.scrollTo({
-
-    top: 0,
-
-    behavior: "smooth"
-
-  });
-
-
-  document
-    .getElementById(
-      "productName"
-    )
-    .textContent =
-      inspectionResult.productName;
-
-
-  document
-    .getElementById(
-      "inspectionDate"
-    )
-    .textContent =
-      `Inspected on ${new Date().toLocaleString()}`;
-
-
-  renderOverallStatus();
-
+  renderOverall();
   renderSummary();
-
   renderDeclarations();
-
   renderComparisons();
-
   renderFindings();
-
 }
 
+function renderOverall() {
+  const box = $("overallStatus");
+  const title = $("overallTitle");
+  const badge = $("overallBadge");
 
-function renderOverallStatus() {
+  box.className = `overall-status ${inspectionResult.status}`;
 
-  const box =
-    document.getElementById(
-      "overallStatus"
-    );
-
-
-  box.className =
-    `overall-status ${
-      inspectionResult.status
-    }`;
-
-
-  const title =
-    document.getElementById(
-      "overallTitle"
-    );
-
-
-  const badge =
-    document.getElementById(
-      "overallBadge"
-    );
-
-
-  if (
-    inspectionResult.status ===
-    "pass"
-  ) {
-
-    title.textContent =
-      "Compliant";
-
-    badge.textContent =
-      "Compliant";
-
-    badge.style.background =
-      "var(--pass-bg)";
-
-    badge.style.color =
-      "var(--pass)";
-
-  }
-  else if (
-    inspectionResult.status ===
-    "review"
-  ) {
-
-    title.textContent =
-      "Review Required";
-
-    badge.textContent =
-      "Review Required";
-
-    badge.style.background =
-      "var(--review-bg)";
-
-    badge.style.color =
-      "var(--review)";
-
-  }
-  else {
-
-    title.textContent =
-      "Potential Discrepancy";
-
-    badge.textContent =
-      "Potential Violation";
-
+  if (inspectionResult.status === "pass") {
+    title.textContent = "Compliant";
+    badge.textContent = "Compliant";
+    badge.style.background = "var(--pass)";
+  } else if (inspectionResult.status === "review") {
+    title.textContent = "Review Required";
+    badge.textContent = "Review Required";
+    badge.style.background = "var(--review)";
+  } else {
+    title.textContent = "Potential Discrepancy";
+    badge.textContent = "Potential Violation";
+    badge.style.background = "var(--danger)";
   }
 
-
-  document
-    .getElementById(
-      "overallMessage"
-    )
-    .textContent =
-      inspectionResult.message;
-
+  $("overallMessage").textContent = inspectionResult.message;
 }
-
 
 function renderSummary() {
+  const matches = inspectionResult.comparisons.filter(
+    x => x.status === "match"
+  ).length;
 
-  const declarationCount =
-    inspectionResult.declarations.length;
-
-
-  const matches =
-    inspectionResult.comparisons.filter(
-      item =>
-        item.status === "match"
-    ).length;
-
-
-  const review =
-    inspectionResult.declarations.filter(
-      item =>
-        item.status === "review"
-    ).length
-    +
-    inspectionResult.comparisons.filter(
-      item =>
-        item.status === "review"
-    ).length;
-
+  const reviews =
+    inspectionResult.declarations.filter(x => x.status === "review").length +
+    inspectionResult.comparisons.filter(x => x.status === "review").length;
 
   const violations =
-    inspectionResult.declarations.filter(
-      item =>
-        item.status === "violation"
-    ).length
-    +
-    inspectionResult.comparisons.filter(
-      item =>
-        item.status === "mismatch"
-    ).length;
+    inspectionResult.declarations.filter(x => x.status === "violation").length +
+    inspectionResult.comparisons.filter(x => x.status === "mismatch").length;
 
+  $("summary").innerHTML = `
+    <div class="summary-card">
+      <span>DECLARATIONS</span>
+      <strong>${inspectionResult.declarations.length}</strong>
+    </div>
+    <div class="summary-card">
+      <span>MATCHES</span>
+      <strong>${matches}</strong>
+    </div>
+    <div class="summary-card">
+      <span>REVIEW</span>
+      <strong>${reviews}</strong>
+    </div>
+    <div class="summary-card">
+      <span>DISCREPANCIES</span>
+      <strong>${violations}</strong>
+    </div>
+  `;
+}
 
-  document
-    .getElementById(
-      "summaryDeclarations"
-    )
-    .textContent =
-      declarationCount;
+function statusBadge(status) {
+  const label = {
+    pass: "Pass",
+    review: "Review",
+    violation: "Potential Violation",
+    mismatch: "Mismatch"
+  }[status] || status;
 
+  const cls = status === "mismatch" ? "violation" : status;
 
-  document
-    .getElementById(
-      "summaryMatches"
-    )
-    .textContent =
-      matches;
+  return `<span class="badge ${cls}">${label}</span>`;
+}
 
+function renderDeclarations(target = "declarations") {
+  $(target).innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Declaration</th>
+          <th>Value</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${inspectionResult.declarations.map(item => `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.value}</td>
+            <td>${statusBadge(item.status)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
 
-  document
-    .getElementById(
-      "summaryReview"
-    )
-    .textContent =
-      review;
+function renderComparisons(target = "comparisons") {
+  $(target).innerHTML = `
+    <div class="head">
+      <span>FIELD</span>
+      <span>PACKAGE</span>
+      <span>ONLINE / CODE</span>
+      <span>STATUS</span>
+    </div>
 
+    ${inspectionResult.comparisons.map(item => `
+      <div>
+        <span>${item.field}</span>
+        <span>${item.package}</span>
+        <span>${item.online}</span>
+        <span>${statusBadge(item.status)}</span>
+      </div>
+    `).join("")}
+  `;
+}
 
-  document
-    .getElementById(
-      "summaryViolations"
-    )
-    .textContent =
-      violations;
+function renderFindings(target = "findings") {
+  $(target).innerHTML = inspectionResult.findings.map(item => `
+    <div class="finding">
+      <div class="finding-top">
+        <strong>${item.title}</strong>
+        ${statusBadge(item.status)}
+      </div>
 
+      <p>${item.description}</p>
+      <div class="evidence">Evidence: ${item.evidence}</div>
+    </div>
+  `).join("");
 }
 
 
-function formatStatus(status) {
+/* Report */
 
-  if (status === "pass") {
+function renderReport() {
+  const date = new Date().toLocaleString();
 
-    return "Compliant";
+  $("reportProduct").textContent = inspectionResult.productName;
+  $("reportStatus").textContent = getStatusLabel();
+  $("reportMessage").textContent = inspectionResult.message;
+  $("reportDate").textContent = `Generated on ${date}`;
 
-  }
+  $("reportDeclarations").innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Declaration</th>
+          <th>Value</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${inspectionResult.declarations.map(item => `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.value}</td>
+            <td>${statusBadge(item.status)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 
+  $("reportComparisons").innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Package</th>
+          <th>Online / Code</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${inspectionResult.comparisons.map(item => `
+          <tr>
+            <td>${item.field}</td>
+            <td>${item.package}</td>
+            <td>${item.online}</td>
+            <td>${statusBadge(item.status)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
 
-  if (status === "review") {
+  $("reportFindings").innerHTML = inspectionResult.findings.map(item => `
+    <div class="finding">
+      <div class="finding-top">
+        <strong>${item.title}</strong>
+        ${statusBadge(item.status)}
+      </div>
+      <p>${item.description}</p>
+      <div class="evidence">Evidence: ${item.evidence}</div>
+    </div>
+  `).join("");
+}
 
-    return "Review Required";
-
-  }
-
-
+function getStatusLabel() {
+  if (inspectionResult.status === "pass") return "Compliant";
+  if (inspectionResult.status === "review") return "Review Required";
   return "Potential Violation";
-
 }
 
 
-/* =========================
-   DECLARATIONS
-========================= */
+/* Start with the home page */
 
-function renderDeclarations() {
-
-  const container =
-    document.getElementById(
-      "declarationsTable"
-    );
-
-
-  container.innerHTML =
-    `<div class="declaration-table"></div>`;
-
-
-  const table =
-    container.querySelector(
-      ".declaration-table"
-    );
-
-
-  inspectionResult.declarations.forEach(
-    (item) => {
-
-      const row =
-        document.createElement(
-          "div"
-        );
-
-
-      row.className =
-        "declaration-row";
-
-
-      row.innerHTML = `
-
-        <strong>
-          ${item.name}
-        </strong>
-
-
-        <p>
-          ${item.value}
-        </p>
-
-
-        <span
-          class="status ${item.status}"
-        >
-          ${formatStatus(item.status)}
-        </span>
-
-      `;
-
-
-      table.appendChild(row);
-
-    }
-  );
-
-}
-
-
-/* =========================
-   COMPARISONS
-========================= */
-
-function renderComparisons() {
-
-  renderComparisonInto(
-    document.getElementById(
-      "comparisonContainer"
-    )
-  );
-
-}
-
-
-function renderComparisonInto(container) {
-
-  container.innerHTML = "";
-
-
-  inspectionResult.comparisons.forEach(
-    (item) => {
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        "comparison-result";
-
-
-      const statusText =
-        item.status === "match"
-          ? "Match"
-          : item.status === "mismatch"
-            ? "Mismatch"
-            : "Review";
-
-
-      card.innerHTML = `
-
-        <strong>
-          ${item.field}
-        </strong>
-
-
-        <div class="comparison-source">
-
-          <span>
-            Package:
-          </span>
-
-          <strong>
-            ${item.package}
-          </strong>
-
-        </div>
-
-
-        <div class="comparison-source">
-
-          <span>
-            Online:
-          </span>
-
-          <strong>
-            ${item.online}
-          </strong>
-
-        </div>
-
-
-        <span
-          class="comparison-status ${item.status}"
-        >
-          ${statusText}
-        </span>
-
-      `;
-
-
-      container.appendChild(card);
-
-    }
-  );
-
-}
-
-
-/* =========================
-   FINDINGS
-========================= */
-
-function renderFindings() {
-
-  const container =
-    document.getElementById(
-      "findingsContainer"
-    );
-
-
-  container.innerHTML = "";
-
-
-  inspectionResult.findings.forEach(
-    (finding) => {
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        `finding-card ${finding.status}`;
-
-
-      card.innerHTML = `
-
-        <div class="finding-card-header">
-
-          <h3>
-            ${finding.title}
-          </h3>
-
-          <span
-            class="status ${finding.status}"
-          >
-            ${formatStatus(finding.status)}
-          </span>
-
-        </div>
-
-
-        <p>
-          ${finding.description}
-        </p>
-
-
-        <div class="finding-evidence">
-
-          Evidence:
-          ${finding.evidence}
-
-        </div>
-
-      `;
-
-
-      container.appendChild(card);
-
-    }
-  );
-
-}
-
-
-/* =========================
-   REPORT
-========================= */
-
-function generateReport() {
-
-  hideAllPages();
-
-
-  reportPage.classList.remove(
-    "hidden"
-  );
-
-
-  window.scrollTo({
-
-    top: 0,
-
-    behavior: "smooth"
-
-  });
-
-
-  document
-    .getElementById(
-      "reportId"
-    )
-    .textContent =
-
-    `INS-${new Date().getFullYear()}-${
-      String(
-        Math.floor(
-          Math.random() * 9000
-        ) + 1000
-      )
-    }`;
-
-
-  document
-    .getElementById(
-      "reportSummary"
-    )
-    .textContent =
-      inspectionResult.message;
-
-
-  renderReportDeclarations();
-
-  renderReportComparisons();
-
-  renderReportFindings();
-
-}
-
-
-function renderReportDeclarations() {
-
-  const container =
-    document.getElementById(
-      "reportDeclarations"
-    );
-
-
-  container.innerHTML =
-    `<div class="declaration-table"></div>`;
-
-
-  const table =
-    container.querySelector(
-      ".declaration-table"
-    );
-
-
-  inspectionResult.declarations.forEach(
-    (item) => {
-
-      const row =
-        document.createElement(
-          "div"
-        );
-
-
-      row.className =
-        "declaration-row";
-
-
-      row.innerHTML = `
-
-        <strong>
-          ${item.name}
-        </strong>
-
-
-        <p>
-          ${item.value}
-        </p>
-
-
-        <span
-          class="status ${item.status}"
-        >
-          ${formatStatus(item.status)}
-        </span>
-
-      `;
-
-
-      table.appendChild(row);
-
-    }
-  );
-
-}
-
-
-function renderReportComparisons() {
-
-  renderComparisonInto(
-
-    document.getElementById(
-      "reportComparison"
-    )
-
-  );
-
-}
-
-
-function renderReportFindings() {
-
-  const container =
-    document.getElementById(
-      "reportFindings"
-    );
-
-
-  container.innerHTML = "";
-
-
-  inspectionResult.findings.forEach(
-    (finding) => {
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        `finding-card ${finding.status}`;
-
-
-      card.innerHTML = `
-
-        <div class="finding-card-header">
-
-          <h3>
-            ${finding.title}
-          </h3>
-
-          <span
-            class="status ${finding.status}"
-          >
-            ${formatStatus(finding.status)}
-          </span>
-
-        </div>
-
-
-        <p>
-          ${finding.description}
-        </p>
-
-
-        <div class="finding-evidence">
-
-          Evidence:
-          ${finding.evidence}
-
-        </div>
-
-      `;
-
-
-      container.appendChild(card);
-
-    }
-  );
-
-}
-
-
-/* =========================
-   BACK / RESET
-========================= */
-
-function backToResults() {
-
-  hideAllPages();
-
-  resultsPage.classList.remove(
-    "hidden"
-  );
-
-}
-
-
-function newInspection() {
-
-  uploadedImages.forEach(
-    (image) => {
-
-      if (image.url) {
-
-        URL.revokeObjectURL(
-          image.url
-        );
-
-      }
-
-    }
-  );
-
-
-  removeListing();
-
-
-  uploadedImages = [];
-
-
-  imagePreview.innerHTML = "";
-
-
-  imageCount.textContent =
-    "0 images";
-
-
-  analyzeButton.disabled =
-    true;
-
-
-  goHome();
-
-}
+hidePages();
+homePage.classList.remove("hidden");

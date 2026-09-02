@@ -1,1590 +1,493 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>MetroCheck | Smart Package Compliance</title>
+  <title>LabelLens | Package Compliance</title>
 
   <link rel="stylesheet" href="style.css">
 
-  <!-- OCR library - will be used in the next implementation step -->
+  <!-- OCR library for the later OCR implementation -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 
 <body>
 
-  <!-- =========================
-       NAVBAR
-  ========================== -->
-
+  <!-- Navbar -->
   <nav class="navbar">
-
-    <button class="brand-button" onclick="goHome()">
-
-      <span class="logo-icon">✓</span>
-
-      <span>MetroCheck</span>
-
+    <button class="brand" onclick="goHome()">
+      <span class="logo">✓</span>
+      <span>LabelLens</span>
     </button>
 
-
-    <button
-      class="nav-button"
-      onclick="startInspection()"
-    >
-      Start Inspection
-      <span>→</span>
+    <button class="nav-btn" onclick="startInspection()">
+      Start Inspection →
     </button>
-
   </nav>
 
-
-  <!-- =========================
-       HOME
-  ========================== -->
-
+  <!-- HOME -->
   <main id="homePage">
 
-    <!-- HERO -->
-
     <section class="hero">
-
-      <div class="hero-content">
-
-        <span class="tag">
-          EVIDENCE-BACKED COMPLIANCE
-        </span>
-
+      <div class="hero-copy">
+        <span class="tag">EVIDENCE-BACKED COMPLIANCE</span>
 
         <h1>
           Verify what a product
           <span>claims</span> across every source.
         </h1>
 
-
-        <p class="hero-text">
-
-          MetroCheck analyzes package labels, compares declarations
-          across package panels and optional online listings, checks
-          machine-readable information, and produces an evidence-backed
-          compliance report.
-
+        <p>
+          LabelLens checks package labels, compares declarations across
+          different panels and optional online listings, detects
+          machine-readable codes, and creates an inspection-ready report.
         </p>
 
-
-        <div class="hero-buttons">
-
-          <button
-            class="primary-button"
-            onclick="startInspection()"
-          >
+        <div class="hero-actions">
+          <button class="primary-btn" onclick="startInspection()">
             Start Inspection →
           </button>
 
-
-          <button
-            class="secondary-button"
-            onclick="scrollToHowItWorks()"
-          >
+          <button class="secondary-btn" onclick="scrollToHowItWorks()">
             See how it works
           </button>
-
         </div>
 
-
-        <p class="disclaimer">
-
-          Automated results are advisory. Potential violations and
-          discrepancies require verification by an authorised inspector.
-
+        <p class="note">
+          Automated results are advisory. Potential discrepancies should be
+          verified by an authorised inspector.
         </p>
-
       </div>
 
-
-      <!-- HERO VISUAL -->
-
-      <div class="verification-card">
-
-        <div class="verification-header">
-
+      <div class="verify-card">
+        <div class="card-head">
           <div>
-
-            <span class="mini-label">
-              CROSS-SOURCE CHECK
-            </span>
-
-            <h3>
-              Product information
-            </h3>
-
+            <small>CROSS-SOURCE CHECK</small>
+            <h3>Product information</h3>
           </div>
-
-          <span class="verified-badge">
-            ● Live analysis
-          </span>
-
+          <span class="status-pill pass-pill">● Live analysis</span>
         </div>
 
-
-        <div class="source-column">
-
-          <div class="source-card">
-
-            <span class="source-title">
-              PACKAGE
-            </span>
-
-            <div class="source-value">
-              ₹199
-            </div>
-
-            <small>
-              MRP
-            </small>
-
+        <div class="source-grid">
+          <div class="source-box">
+            <small>PACKAGE</small>
+            <strong>₹199</strong>
+            <span>MRP</span>
           </div>
 
+          <div class="compare">↔</div>
 
-          <div class="compare-arrow">
-            ↔
+          <div class="source-box">
+            <small>ONLINE LISTING</small>
+            <strong class="danger">₹249</strong>
+            <span>MRP</span>
           </div>
-
-
-          <div class="source-card">
-
-            <span class="source-title">
-              ONLINE LISTING
-            </span>
-
-            <div class="source-value danger-text">
-              ₹249
-            </div>
-
-            <small>
-              MRP
-            </small>
-
-          </div>
-
         </div>
 
-
-        <div class="mismatch-alert">
-
-          <div class="alert-icon">
-            !
-          </div>
-
+        <div class="alert-box">
+          <div class="alert-icon">!</div>
           <div>
-
-            <strong>
-              MRP discrepancy detected
-            </strong>
-
-            <p>
-              Package ₹199 · Online ₹249
-            </p>
-
+            <strong>MRP discrepancy detected</strong>
+            <p>Package ₹199 · Online ₹249</p>
           </div>
-
         </div>
 
-
-        <div class="verified-row">
-
+        <div class="verify-row">
           <span>Manufacturer</span>
-
-          <span class="match">
-            ✓ Match
-          </span>
-
+          <b class="success">✓ Match</b>
         </div>
 
-
-        <div class="verified-row">
-
+        <div class="verify-row">
           <span>Net quantity</span>
-
-          <span class="match">
-            ✓ Match
-          </span>
-
+          <b class="success">✓ Match</b>
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- WHAT WE CHECK -->
-
-    <section class="features">
-
-      <div class="section-heading-main">
-
-        <span class="tag">
-          CORE CAPABILITIES
-        </span>
-
-        <h2>
-          More than just OCR.
-        </h2>
-
-        <p>
-          MetroCheck is designed around the actual inspection workflow,
-          not just text extraction.
-        </p>
-
+    <section class="section">
+      <div class="section-head">
+        <span class="tag">CORE CAPABILITIES</span>
+        <h2>More than just OCR.</h2>
+        <p>Built around the inspection workflow, not just text extraction.</p>
       </div>
-
 
       <div class="feature-grid">
-
-
         <article class="feature-card">
-
-          <div class="feature-icon">
-            ☷
-          </div>
-
-          <h3>
-            Declaration Extraction
-          </h3>
-
-          <p>
-            Extract manufacturer, net quantity, MRP, dates,
-            consumer care details and other required declarations.
-          </p>
-
+          <div class="feature-icon">☷</div>
+          <h3>Declaration Extraction</h3>
+          <p>Extract product name, manufacturer, quantity, MRP, dates and consumer-care information.</p>
         </article>
 
-
         <article class="feature-card">
-
-          <div class="feature-icon">
-            ↔
-          </div>
-
-          <h3>
-            Cross-Panel Verification
-          </h3>
-
-          <p>
-            Compare declarations across front, back and side
-            panels to detect inconsistent values.
-          </p>
-
+          <div class="feature-icon">↔</div>
+          <h3>Cross-Panel Verification</h3>
+          <p>Compare information across front, back and side package panels.</p>
         </article>
 
-
         <article class="feature-card">
-
-          <div class="feature-icon">
-            ◫
-          </div>
-
-          <h3>
-            Online Listing Check
-          </h3>
-
-          <p>
-            Compare physical package declarations with an
-            e-commerce product listing supplied by the inspector.
-          </p>
-
+          <div class="feature-icon">◫</div>
+          <h3>Online Listing Check</h3>
+          <p>Compare package information with an uploaded e-commerce listing screenshot.</p>
         </article>
 
-
         <article class="feature-card">
-
-          <div class="feature-icon">
-            #
-          </div>
-
-          <h3>
-            QR / Barcode Verification
-          </h3>
-
-          <p>
-            Detect machine-readable codes and compare available
-            encoded information with printed declarations.
-          </p>
-
+          <div class="feature-icon">#</div>
+          <h3>QR / Barcode Verification</h3>
+          <p>Detect machine-readable codes and use them as an additional verification source.</p>
         </article>
 
-
         <article class="feature-card">
-
-          <div class="feature-icon">
-            ◎
-          </div>
-
-          <h3>
-            Evidence & Confidence
-          </h3>
-
-          <p>
-            Preserve the source text, image region and confidence
-            behind every automated finding.
-          </p>
-
+          <div class="feature-icon">◎</div>
+          <h3>Evidence & Confidence</h3>
+          <p>Show the source and confidence behind automated findings.</p>
         </article>
 
-
         <article class="feature-card">
-
-          <div class="feature-icon">
-            ▣
-          </div>
-
-          <h3>
-            Inspection Report
-          </h3>
-
-          <p>
-            Generate a structured report containing discrepancies,
-            findings and supporting evidence.
-          </p>
-
+          <div class="feature-icon">▣</div>
+          <h3>Inspection Report</h3>
+          <p>Generate a structured report containing declarations, findings and evidence.</p>
         </article>
-
       </div>
-
     </section>
 
-
-    <!-- HOW IT WORKS -->
-
-    <section
-      class="how-it-works"
-      id="howItWorks"
-    >
-
-      <div class="section-heading-main">
-
-        <span class="tag">
-          WORKFLOW
-        </span>
-
-        <h2>
-          How MetroCheck works.
-        </h2>
-
-        <p>
-          One inspection, multiple sources of evidence.
-        </p>
-
+    <section class="section" id="howItWorks">
+      <div class="section-head">
+        <span class="tag">WORKFLOW</span>
+        <h2>How LabelLens works.</h2>
+        <p>One inspection, multiple sources of evidence.</p>
       </div>
-
 
       <div class="steps">
-
-
         <div class="step">
-
-          <div class="step-number">
-            01
-          </div>
-
-          <h3>
-            Upload
-          </h3>
-
-          <p>
-            Add front, back and side package photographs.
-            An online listing can also be supplied.
-          </p>
-
+          <span>01</span>
+          <h3>Upload</h3>
+          <p>Add front, back and side package photographs. Online listing is optional.</p>
         </div>
 
-
         <div class="step">
-
-          <div class="step-number">
-            02
-          </div>
-
-          <h3>
-            Extract
-          </h3>
-
-          <p>
-            OCR identifies printed declarations and machine-readable
-            codes are detected automatically.
-          </p>
-
+          <span>02</span>
+          <h3>Extract</h3>
+          <p>OCR identifies declarations while QR and barcode regions are detected.</p>
         </div>
 
-
         <div class="step">
-
-          <div class="step-number">
-            03
-          </div>
-
-          <h3>
-            Compare
-          </h3>
-
-          <p>
-            MetroCheck compares values across package panels,
-            online listings and encoded information.
-          </p>
-
+          <span>03</span>
+          <h3>Compare</h3>
+          <p>Values are compared across package panels, online listings and codes.</p>
         </div>
 
-
         <div class="step">
-
-          <div class="step-number">
-            04
-          </div>
-
-          <h3>
-            Report
-          </h3>
-
-          <p>
-            Findings are presented with evidence, confidence
-            and a clear manual-verification path.
-          </p>
-
+          <span>04</span>
+          <h3>Report</h3>
+          <p>Findings are shown with evidence and a manual verification path.</p>
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- DIFFERENTIATOR -->
-
-    <section class="differentiator">
-
-      <div class="differentiator-left">
-
-        <span class="tag">
-          WHY METROCHECK
-        </span>
-
-        <h2>
-          A chatbot gives you an answer.
-          MetroCheck gives you an inspection trail.
-        </h2>
-
+    <section class="difference">
+      <div>
+        <span class="tag">WHY LABEL LENS</span>
+        <h2>A chatbot gives you an answer. LabelLens gives you an inspection trail.</h2>
       </div>
 
-
-      <div class="differentiator-right">
-
-        <div class="difference-row">
-
-          <span>
-            General AI response
-          </span>
-
-          <strong>
-            Unstructured explanation
-          </strong>
-
-        </div>
-
-
-        <div class="difference-row">
-
-          <span>
-            MetroCheck
-          </span>
-
-          <strong>
-            Structured declarations + evidence
-          </strong>
-
-        </div>
-
-
-        <div class="difference-row">
-
-          <span>
-            General AI response
-          </span>
-
-          <strong>
-            One image at a time
-          </strong>
-
-        </div>
-
-
-        <div class="difference-row">
-
-          <span>
-            MetroCheck
-          </span>
-
-          <strong>
-            Cross-source comparison
-          </strong>
-
-        </div>
-
-
-        <div class="difference-row">
-
-          <span>
-            General AI response
-          </span>
-
-          <strong>
-            Generic answer
-          </strong>
-
-        </div>
-
-
-        <div class="difference-row">
-
-          <span>
-            MetroCheck
-          </span>
-
-          <strong>
-            Inspection-ready report
-          </strong>
-
-        </div>
-
+      <div class="difference-list">
+        <div><span>General AI</span><b>Unstructured explanation</b></div>
+        <div><span>LabelLens</span><b>Structured declarations + evidence</b></div>
+        <div><span>General AI</span><b>One image at a time</b></div>
+        <div><span>LabelLens</span><b>Cross-source comparison</b></div>
+        <div><span>General AI</span><b>Generic answer</b></div>
+        <div><span>LabelLens</span><b>Inspection-ready report</b></div>
       </div>
-
     </section>
-
-
-    <!-- CTA -->
 
     <section class="cta">
-
       <div>
-
-        <span class="tag cta-tag">
-          READY TO BEGIN?
-        </span>
-
-        <h2>
-          Inspect a packaged commodity.
-        </h2>
-
-        <p>
-          Upload the package and let MetroCheck do the verification.
-        </p>
-
+        <span class="tag">READY TO BEGIN?</span>
+        <h2>Inspect a packaged commodity.</h2>
+        <p>Upload the package and start the verification workflow.</p>
       </div>
 
-
-      <button
-        class="white-button"
-        onclick="startInspection()"
-      >
+      <button class="white-btn" onclick="startInspection()">
         Start Inspection →
       </button>
-
     </section>
 
   </main>
 
 
-  <!-- =========================
-       UPLOAD PAGE
-  ========================== -->
+  <!-- UPLOAD PAGE -->
+  <section id="uploadPage" class="page hidden">
 
-  <section
-    id="uploadPage"
-    class="page hidden"
-  >
-
-    <div class="page-header">
-
+    <div class="page-head">
       <div>
-
-        <span class="tag">
-          STEP 1 OF 3
-        </span>
-
-        <h1>
-          Build an inspection
-        </h1>
-
-        <p>
-          Upload the physical package panels and optionally provide
-          the product's online listing.
-        </p>
-
+        <span class="tag">STEP 1 OF 3</span>
+        <h1>Build an inspection</h1>
+        <p>Upload physical package panels and optionally provide the online listing.</p>
       </div>
 
-
-      <button
-        class="back-button"
-        onclick="goHome()"
-      >
-        ← Back
-      </button>
-
+      <button class="secondary-btn" onclick="goHome()">← Back</button>
     </div>
 
+    <div class="input-grid">
 
-    <div class="inspection-input-grid">
+      <!-- Package -->
+      <div class="panel-card">
 
-
-      <!-- PACKAGE -->
-
-      <div class="input-section">
-
-        <div class="input-section-header">
-
+        <div class="panel-head">
           <div>
-
-            <span class="step-label">
-              SOURCE 01
-            </span>
-
-            <h2>
-              Physical package
-            </h2>
-
-            <p>
-              Upload clear photographs of the product panels.
-            </p>
-
+            <span class="step-label">SOURCE 01</span>
+            <h2>Physical package</h2>
+            <p>Upload clear photographs of the product panels.</p>
           </div>
 
-
-          <span class="required-label">
-            Required
-          </span>
-
+          <span class="required">Required</span>
         </div>
 
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="imageInput" accept="image/*" multiple hidden>
 
-        <div
-          class="upload-area"
-          id="uploadArea"
-        >
-
-          <input
-            type="file"
-            id="imageInput"
-            accept="image/*"
-            multiple
-            hidden
-          >
-
-
-          <div class="upload-icon">
-            ⇧
-          </div>
-
-
-          <h3>
-            Drop package images here
-          </h3>
-
-
-          <p>
-            or click to browse
-          </p>
-
-
-          <small>
-            JPG, PNG or WEBP · Multiple files
-          </small>
-
+          <div class="upload-icon">⇧</div>
+          <h3>Drop package images here</h3>
+          <p>or click to browse</p>
+          <small>JPG, PNG or WEBP · Multiple files</small>
         </div>
 
-
-        <div class="section-heading">
-
-          <h3>
-            Package panels
-          </h3>
-
-          <span id="imageCount">
-            0 images
-          </span>
-
+        <div class="list-head">
+          <h3>Package panels</h3>
+          <span id="imageCount">0 images</span>
         </div>
 
+        <div id="imagePreview" class="image-grid"></div>
 
-        <div
-          id="imagePreview"
-          class="image-preview-grid"
-        ></div>
-
-
-        <div class="upload-tips">
-
-          <strong>
-            Tips for better analysis
-          </strong>
-
+        <div class="tips">
+          <strong>Tips for better analysis</strong>
           <ul>
-
-            <li>
-              Keep the whole package panel visible.
-            </li>
-
-            <li>
-              Avoid glare and shadows.
-            </li>
-
-            <li>
-              Capture small print clearly.
-            </li>
-
-            <li>
-              Include the MRP and net quantity panels.
-            </li>
-
+            <li>Keep the whole panel visible.</li>
+            <li>Avoid glare and shadows.</li>
+            <li>Capture small print clearly.</li>
+            <li>Include MRP and quantity areas.</li>
           </ul>
-
         </div>
 
       </div>
 
 
-      <!-- ONLINE LISTING -->
+      <!-- Online source -->
+      <div class="panel-card">
 
-      <div class="input-section optional-section">
-
-        <div class="input-section-header">
-
+        <div class="panel-head">
           <div>
-
-            <span class="step-label">
-              SOURCE 02
-            </span>
-
-            <h2>
-              Online listing
-            </h2>
-
-            <p>
-              Optional e-commerce listing screenshot for cross-checking.
-            </p>
-
+            <span class="step-label">SOURCE 02</span>
+            <h2>Online listing</h2>
+            <p>Optional e-commerce screenshot for cross-checking.</p>
           </div>
 
-
-          <span class="optional-label">
-            Optional
-          </span>
-
+          <span class="optional">Optional</span>
         </div>
 
+        <label class="listing-box" for="listingInput">
+          <input type="file" id="listingInput" accept="image/*" hidden>
 
-        <label
-          class="listing-upload"
-          for="listingInput"
-        >
-
-          <input
-            type="file"
-            id="listingInput"
-            accept="image/*"
-            hidden
-          >
-
-
-          <div class="listing-icon">
-            ◫
-          </div>
-
-
-          <strong>
-            Add listing screenshot
-          </strong>
-
-
-          <span>
-            Compare product information shown online
-          </span>
-
-
-          <small>
-            JPG, PNG or WEBP
-          </small>
-
+          <div class="listing-icon">◫</div>
+          <strong>Add listing screenshot</strong>
+          <span>Compare information shown online</span>
+          <small>JPG, PNG or WEBP</small>
         </label>
 
-
-        <div
-          id="listingPreview"
-          class="listing-preview hidden"
-        >
-
-          <div class="listing-preview-image">
-
-            <img
-              id="listingImage"
-              src=""
-              alt="Online listing preview"
-            >
-
-          </div>
-
-
-          <div class="listing-preview-info">
-
-            <strong>
-              Online listing added
-            </strong>
-
-            <span id="listingFileName">
-              listing.png
-            </span>
-
-            <button
-              type="button"
-              class="remove-listing"
-              onclick="removeListing()"
-            >
-              Remove
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <!-- QR info -->
-
-        <div class="automatic-source-card">
-
-          <div class="auto-icon">
-            #
-          </div>
-
+        <div id="listingPreview" class="listing-preview hidden">
+          <img id="listingImage" src="" alt="Online listing">
           <div>
-
-            <strong>
-              QR / Barcode detection
-            </strong>
-
-            <p>
-              MetroCheck will automatically scan the uploaded
-              package images for machine-readable codes.
-            </p>
-
-            <span class="auto-status">
-              Automatic
-            </span>
-
+            <strong>Online listing added</strong>
+            <span id="listingFileName"></span>
+            <button class="remove-btn" onclick="removeListing()">Remove</button>
           </div>
-
         </div>
 
+        <div class="auto-card">
+          <div class="feature-icon">#</div>
+          <div>
+            <strong>QR / Barcode detection</strong>
+            <p>Uploaded package images will be checked for machine-readable codes.</p>
+            <span>Automatic</span>
+          </div>
+        </div>
 
-        <div class="comparison-preview">
-
-          <div class="comparison-preview-title">
-
-            <span>
-              CROSS-SOURCE VERIFICATION
-            </span>
-
-            <span>
-              Preview
-            </span>
-
+        <div class="comparison-box">
+          <div class="comparison-title">
+            <span>CROSS-SOURCE VERIFICATION</span>
+            <span>Preview</span>
           </div>
 
-
-          <div class="comparison-item">
-
-            <span>
-              Printed MRP
-            </span>
-
-            <span class="not-ready">
-              Waiting for analysis
-            </span>
-
-          </div>
-
-
-          <div class="comparison-item">
-
-            <span>
-              Online MRP
-            </span>
-
-            <span class="not-ready">
-              Waiting for analysis
-            </span>
-
-          </div>
-
-
-          <div class="comparison-item">
-
-            <span>
-              QR / Barcode
-            </span>
-
-            <span class="not-ready">
-              Will scan automatically
-            </span>
-
-          </div>
-
+          <div><span>Printed MRP</span><b>Waiting for analysis</b></div>
+          <div><span>Online MRP</span><b>Waiting for analysis</b></div>
+          <div><span>QR / Barcode</span><b>Will scan automatically</b></div>
         </div>
 
       </div>
-
     </div>
-
 
     <div class="bottom-action">
+      <p><strong>Privacy:</strong> Images stay in the browser in this prototype.</p>
 
-      <p>
-
-        <strong>
-          Privacy:
-        </strong>
-
-        Images are processed locally by the application in the current
-        prototype and are not sent to a third-party AI service.
-
-      </p>
-
-
-      <button
-        class="primary-button analyze-button"
-        id="analyzeButton"
-        onclick="analyzeProduct()"
-        disabled
-      >
+      <button id="analyzeButton" class="primary-btn" onclick="analyzeProduct()" disabled>
         Analyze Product →
       </button>
-
     </div>
 
   </section>
 
 
-  <!-- =========================
-       ANALYSIS PAGE
-  ========================== -->
+  <!-- ANALYSIS PAGE -->
+  <section id="analysisPage" class="page hidden">
 
-  <section
-    id="analysisPage"
-    class="page hidden"
-  >
-
-    <div class="page-header">
-
+    <div class="page-head">
       <div>
-
-        <span class="tag">
-          STEP 2 OF 3
-        </span>
-
-        <h1>
-          Running verification
-        </h1>
-
-        <p>
-          MetroCheck is extracting, comparing and validating the available evidence.
-        </p>
-
+        <span class="tag">STEP 2 OF 3</span>
+        <h1>Running verification</h1>
+        <p>Extracting, comparing and validating the available evidence.</p>
       </div>
-
     </div>
 
-
-    <div class="analysis-container">
-
+    <div class="analysis-card">
 
       <div class="analysis-steps">
-
-
-        <div
-          class="analysis-step"
-          id="step1"
-        >
-
-          <div class="step-circle">
-            1
-          </div>
-
-          <div>
-
-            <span class="step-label">
-              SOURCE ANALYSIS
-            </span>
-
-            <h3>
-              Optical Character Recognition
-            </h3>
-
-            <p>
-              Reading text from uploaded package images.
-            </p>
-
-          </div>
-
+        <div id="step1" class="analysis-step">
+          <span>01</span>
+          <div><strong>Read package images</strong><small>Detecting text and image regions</small></div>
         </div>
 
-
-        <div
-          class="analysis-step"
-          id="step2"
-        >
-
-          <div class="step-circle">
-            2
-          </div>
-
-          <div>
-
-            <span class="step-label">
-              EXTRACTION
-            </span>
-
-            <h3>
-              Declaration Extraction
-            </h3>
-
-            <p>
-              Mapping OCR text to declaration fields.
-            </p>
-
-          </div>
-
+        <div id="step2" class="analysis-step">
+          <span>02</span>
+          <div><strong>Extract declarations</strong><small>Reading product information</small></div>
         </div>
 
-
-        <div
-          class="analysis-step"
-          id="step3"
-        >
-
-          <div class="step-circle">
-            3
-          </div>
-
-          <div>
-
-            <span class="step-label">
-              VERIFICATION
-            </span>
-
-            <h3>
-              Cross-Source Comparison
-            </h3>
-
-            <p>
-              Comparing package, listing and code information.
-            </p>
-
-          </div>
-
+        <div id="step3" class="analysis-step">
+          <span>03</span>
+          <div><strong>Compare sources</strong><small>Checking package, listing and codes</small></div>
         </div>
 
-
-        <div
-          class="analysis-step"
-          id="step4"
-        >
-
-          <div class="step-circle">
-            4
-          </div>
-
-          <div>
-
-            <span class="step-label">
-              REPORT
-            </span>
-
-            <h3>
-              Evidence & Findings
-            </h3>
-
-            <p>
-              Preparing the final inspection results.
-            </p>
-
-          </div>
-
+        <div id="step4" class="analysis-step">
+          <span>04</span>
+          <div><strong>Build inspection report</strong><small>Preparing findings and evidence</small></div>
         </div>
-
       </div>
 
-
-      <div class="analysis-output">
-
-        <div class="analysis-output-header">
-
-          <div>
-
-            <span class="step-label">
-              ANALYSIS CONSOLE
-            </span>
-
-            <h3>
-              Inspection activity
-            </h3>
-
-          </div>
-
-          <span class="processing-dot">
-            ● Processing
-          </span>
-
-        </div>
-
-
-        <div id="analysisLog">
-
-          <p>
-            Waiting to start...
-          </p>
-
-        </div>
-
-      </div>
+      <div class="analysis-log" id="analysisLog"></div>
 
     </div>
 
   </section>
 
 
-  <!-- =========================
-       RESULTS PAGE
-  ========================== -->
+  <!-- RESULTS PAGE -->
+  <section id="resultsPage" class="page hidden">
 
-  <section
-    id="resultsPage"
-    class="page hidden"
-  >
+    <div class="page-head">
+      <div>
+        <span class="tag">STEP 3 OF 3</span>
+        <h1 id="productName">Inspection result</h1>
+        <p id="inspectionDate"></p>
+      </div>
 
-    <div class="page-header">
+      <button class="secondary-btn" onclick="showReport()">View Report →</button>
+    </div>
+
+    <div id="overallStatus" class="overall-status">
+      <div>
+        <span class="step-label">ASSESSMENT</span>
+        <h2 id="overallTitle">Potential Discrepancy</h2>
+        <p id="overallMessage"></p>
+      </div>
+
+      <span id="overallBadge" class="result-badge">Potential Violation</span>
+    </div>
+
+    <div class="summary-grid" id="summary"></div>
+
+    <div class="result-card">
+      <div class="card-title">
+        <h2>Declarations</h2>
+        <span>Extracted values</span>
+      </div>
+
+      <div id="declarations" class="table-wrap"></div>
+    </div>
+
+    <div class="result-card">
+      <div class="card-title">
+        <h2>Cross-source verification</h2>
+        <span>Package vs available sources</span>
+      </div>
+
+      <div id="comparisons" class="comparison-table"></div>
+    </div>
+
+    <div class="result-card">
+      <div class="card-title">
+        <h2>Findings</h2>
+        <span>Evidence-backed review items</span>
+      </div>
+
+      <div id="findings" class="findings"></div>
+    </div>
+
+    <div class="result-note">
+      These results are advisory. Image-based screening cannot replace physical inspection.
+    </div>
+
+  </section>
+
+
+  <!-- REPORT PAGE -->
+  <section id="reportPage" class="page hidden">
+
+    <div class="page-head report-head">
+      <div>
+        <span class="tag">INSPECTION REPORT</span>
+        <h1>LabelLens Report</h1>
+        <p id="reportDate"></p>
+      </div>
 
       <div>
-
-        <span class="tag">
-          STEP 3 OF 3
-        </span>
-
-        <h1 id="productName">
-          Inspection Results
-        </h1>
-
-        <p id="inspectionDate"></p>
-
+        <button class="secondary-btn" onclick="showResults()">← Results</button>
+        <button class="primary-btn" onclick="window.print()">Print / Save PDF</button>
       </div>
-
-
-      <div class="result-actions">
-
-        <button
-          class="secondary-button"
-          onclick="newInspection()"
-        >
-          ↻ New Inspection
-        </button>
-
-
-        <button
-          class="primary-button"
-          onclick="generateReport()"
-        >
-          Generate Report
-        </button>
-
-      </div>
-
     </div>
 
+    <div class="report-sheet">
 
-    <!-- OVERALL STATUS -->
-
-    <div
-      id="overallStatus"
-      class="overall-status"
-    >
-
-      <div class="overall-status-content">
-
-        <div>
-
-          <span class="step-label">
-            OVERALL ASSESSMENT
-          </span>
-
-          <h2 id="overallTitle">
-            Inspection Result
-          </h2>
-
-          <p id="overallMessage"></p>
-
-        </div>
-
-
-        <div
-          id="overallBadge"
-          class="overall-badge"
-        >
-          Potential Review
-        </div>
-
+      <div class="report-status">
+        <h2 id="reportProduct">Product</h2>
+        <span id="reportStatus">Potential Violation</span>
       </div>
-
-    </div>
-
-
-    <!-- SUMMARY CARDS -->
-
-    <div class="summary-grid">
-
-      <div class="summary-card">
-
-        <span>
-          DECLARATIONS
-        </span>
-
-        <strong id="summaryDeclarations">
-          0
-        </strong>
-
-      </div>
-
-
-      <div class="summary-card">
-
-        <span>
-          MATCHES
-        </span>
-
-        <strong id="summaryMatches">
-          0
-        </strong>
-
-      </div>
-
-
-      <div class="summary-card warning-card">
-
-        <span>
-          REVIEW
-        </span>
-
-        <strong id="summaryReview">
-          0
-        </strong>
-
-      </div>
-
-
-      <div class="summary-card danger-card">
-
-        <span>
-          DISCREPANCIES
-        </span>
-
-        <strong id="summaryViolations">
-          0
-        </strong>
-
-      </div>
-
-    </div>
-
-
-    <!-- DECLARATIONS -->
-
-    <section class="results-section">
-
-      <div class="section-heading-results">
-
-        <div>
-
-          <span class="step-label">
-            PHYSICAL PACKAGE
-          </span>
-
-          <h2>
-            Detected declarations
-          </h2>
-
-        </div>
-
-        <span class="section-note">
-          Source evidence retained
-        </span>
-
-      </div>
-
-
-      <div id="declarationsTable"></div>
-
-    </section>
-
-
-    <!-- CROSS SOURCE -->
-
-    <section class="results-section">
-
-      <div class="section-heading-results">
-
-        <div>
-
-          <span class="step-label">
-            CROSS-SOURCE VERIFICATION
-          </span>
-
-          <h2>
-            Consistency analysis
-          </h2>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="comparisonContainer"
-        class="comparison-results"
-      ></div>
-
-    </section>
-
-
-    <!-- FINDINGS -->
-
-    <section class="results-section">
-
-      <div class="section-heading-results">
-
-        <div>
-
-          <span class="step-label">
-            INSPECTION FINDINGS
-          </span>
-
-          <h2>
-            Potential issues
-          </h2>
-
-        </div>
-
-      </div>
-
-
-      <div
-        id="findingsContainer"
-        class="findings-grid"
-      ></div>
-
-    </section>
-
-
-    <!-- DISCLAIMER -->
-
-    <div class="results-disclaimer">
-
-      <strong>
-        Important:
-      </strong>
-
-      MetroCheck provides automated screening only. Findings indicate
-      potential violations or items requiring manual verification.
-      They do not constitute a legal determination.
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================
-       REPORT PAGE
-  ========================== -->
-
-  <section
-    id="reportPage"
-    class="page hidden report-page"
-  >
-
-    <div class="report-actions no-print">
-
-      <button
-        class="secondary-button"
-        onclick="backToResults()"
-      >
-        ← Back to Results
-      </button>
-
-
-      <button
-        class="primary-button"
-        onclick="window.print()"
-      >
-        Download / Save PDF
-      </button>
-
-    </div>
-
-
-    <div class="report-document">
-
-      <div class="report-header">
-
-        <div>
-
-          <span class="tag">
-            METROCHECK
-          </span>
-
-          <h1>
-            Packaged Commodity
-            Inspection Report
-          </h1>
-
-          <p>
-            Evidence-backed automated screening
-          </p>
-
-        </div>
-
-
-        <div class="report-id">
-
-          <span>
-            REFERENCE
-          </span>
-
-          <strong id="reportId">
-            INS-2026-001
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <hr>
-
 
       <section class="report-section">
-
-        <div class="report-section-heading">
-
-          <span>
-            01
-          </span>
-
-          <h2>
-            Inspection Summary
-          </h2>
-
-        </div>
-
-
-        <p id="reportSummary"></p>
-
+        <h3>Inspection summary</h3>
+        <p id="reportMessage"></p>
       </section>
 
-
       <section class="report-section">
-
-        <div class="report-section-heading">
-
-          <span>
-            02
-          </span>
-
-          <h2>
-            Detected Declarations
-          </h2>
-
-        </div>
-
-
+        <h3>Declarations</h3>
         <div id="reportDeclarations"></div>
-
       </section>
 
-
       <section class="report-section">
-
-        <div class="report-section-heading">
-
-          <span>
-            03
-          </span>
-
-          <h2>
-            Cross-Source Verification
-          </h2>
-
-        </div>
-
-
-        <div
-          id="reportComparison"
-          class="comparison-results"
-        ></div>
-
+        <h3>Cross-source verification</h3>
+        <div id="reportComparisons"></div>
       </section>
 
-
       <section class="report-section">
-
-        <div class="report-section-heading">
-
-          <span>
-            04
-          </span>
-
-          <h2>
-            Findings
-          </h2>
-
-        </div>
-
-
+        <h3>Findings</h3>
         <div id="reportFindings"></div>
-
       </section>
 
-
-      <section class="report-section">
-
-        <div class="report-section-heading">
-
-          <span>
-            05
-          </span>
-
-          <h2>
-            Disclaimer
-          </h2>
-
-        </div>
-
-
-        <p class="report-disclaimer">
-
-          This report is generated using automated image analysis,
-          declaration extraction and rule-based cross-source comparison.
-          Findings represent potential violations or items requiring
-          manual verification. They do not constitute a legal determination.
-          Physical verification of print size, placement and declared
-          values should be performed by an authorised officer.
-
+      <section class="report-disclaimer">
+        <strong>Disclaimer</strong>
+        <p>
+          LabelLens provides automated screening and evidence organisation.
+          Potential violations and discrepancies require manual verification
+          by an authorised inspector.
         </p>
-
       </section>
 
     </div>
@@ -1593,7 +496,5 @@
 
 
   <script src="script.js"></script>
-
 </body>
-
 </html>
